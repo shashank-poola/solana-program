@@ -32,6 +32,27 @@ pub mod escrow {
         Ok(())
 
        }
+
+    pub fn claim_escrow(ctx:Context<ClaimEscrow>) -> Result<()> {
+        let escrow_key = ctx.accounts.escrow.key();
+        let bump = ctx.accounts.escrow.bump;
+        let seeds = &[b"vault", escrow_key.as_ref(), &[bump]];
+        let signer = &[&seeds[..]];
+
+        let cpi_ctx = CpiContext::new_with_signer(
+            ctx.accounts.token_program.to_account_info(),
+            TokenTransfer {
+                from: ctx.accounts.vault.to_account_info(),
+                to: ctx.accounts.reciever.to_account_info(),
+                authority: ctx.accounts.vault_authority.to_account_info()
+            },
+            signer
+        )
+
+            let _ = transfer(cpi_ctx, ctx.accounts.escrow.amount);
+
+            Ok(())
+         }
     }
 
 #[account]
