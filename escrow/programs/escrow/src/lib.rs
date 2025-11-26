@@ -44,4 +44,43 @@ pub struct Escrow {
 }
 
 #[derive(Accounts)]
-pub struct InitializeEscrow {}
+pub struct InitializeEscrow<'info> {
+    #[account(
+        init, 
+        payer = initializer,
+        space = 8 + 32 + 32 + 32 + 8 +1 
+    )]
+    pub escrow: Account<'info, escrow>,
+
+    #[account(mut)]
+    pub initializer: Signer<'info>,
+
+    #[account(mut)]
+    pub initializer_token_account: Account<'info, TokenAccount>
+
+    #[account(
+        seeds = [b"vault", escrow_key().as_ref()],
+        bump
+    )]
+
+    pub vault_authority:  UncheckedAccounts<'info>,
+
+    #[acconts(mut
+        init,
+        payer: initializer,
+        associated_token:mint = mint,
+        associated_token:authority = vault_authority,
+    )]
+
+    pub vault: Accounts<'info, TokenAccount>
+
+    pub mint: Accounts<'info, Mint>,
+    
+    pub token_program: Program<'info, Token>,
+    pub associated_token_program: Program<'info, AssociatedToken>,
+    pub system_program: Program<'info, System>,
+
+    pub rent: Sysvar<'info, Rent>
+
+
+}
