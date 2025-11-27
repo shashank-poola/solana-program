@@ -114,7 +114,7 @@ cd escrow
 anchor test
 ```
 
-## Project Structure
+## Folder/file Structure
 
 ```
 solana-programs/
