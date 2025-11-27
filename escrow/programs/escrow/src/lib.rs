@@ -96,12 +96,47 @@ pub struct InitializeEscrow<'info> {
     pub vault: Accounts<'info, TokenAccount>
 
     pub mint: Accounts<'info, Mint>,
-    
     pub token_program: Program<'info, Token>,
     pub associated_token_program: Program<'info, AssociatedToken>,
     pub system_program: Program<'info, System>,
-
     pub rent: Sysvar<'info, Rent>
 
+}
 
+#[derive(Accounts)]
+pub struct ClaimEscrow<'info> {
+    #[accounts(mut, has_one = reciever)]
+
+    pub escrow: Accounts<'info>, Escrow>,
+
+    #[accounts(
+        seeds = [b"vault", escrow.key().as_ref()],
+        bump = escrow.bump
+    )]
+
+    pub vault_authority: UncheckedAccounts<'info>,
+
+    #[accounts(mut)]
+    pub vault: Accounts<'info, TokenAccount>
+
+    #[accounts(mut)]
+    pub reciever: Signer<'info>
+
+    #[accounts(mut)]
+    pub reciever_token_account: Accounts<'info, TokenAccount>
+
+    #[accounts(mut)]
+    pub token_program: Program<'info, Token> 
+}
+
+#{error_code}
+pub enum EscrowError {
+    #[msg("Escrow already initialized")]
+    EscrowAlreadyInitialized,
+
+    #[msg("Escrow not initialized")]
+    EscrowNotInitialized,
+
+    #[msg("Missing vault bump")]
+    MissingVaultBump
 }
